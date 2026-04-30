@@ -168,7 +168,7 @@ int mono_tracking(const std::shared_ptr<stella_vslam::system>& slam,
 
             if (!frame.empty() && (num_frame % frame_skip == 0)) {
                 // input the current frame and estimate the camera pose
-                slam->feed_monocular_frame(frame, timestamp, num_frame, mask);
+                slam->feed_monocular_frame(frame, timestamp, mask, num_frame);
             }
 
             const auto tp_2 = std::chrono::steady_clock::now();
