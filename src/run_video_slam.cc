@@ -37,18 +37,18 @@ namespace fs = ghc::filesystem;
 #endif
 
 int mono_tracking(const std::shared_ptr<stella_vslam::system>& slam,
-                  const std::shared_ptr<stella_vslam::config>& cfg,
-                  const std::string& video_file_path,
-                  const std::string& mask_img_path,
-                  const unsigned int frame_skip,
-                  const unsigned int start_time,
-                  const bool no_sleep,
-                  const bool wait_loop_ba,
-                  const bool auto_term,
-                  const std::string& eval_log_dir,
-                  const std::string& map_db_path,
-                  const double start_timestamp,
-                  const std::string& viewer_string) {
+    const std::shared_ptr<stella_vslam::config>& cfg,
+    const std::string& video_file_path,
+    const std::string& mask_img_path,
+    const unsigned int frame_skip,
+    const unsigned int start_time,
+    const bool no_sleep,
+    const bool wait_loop_ba,
+    const bool auto_term,
+    const std::string& eval_log_dir,
+    const std::string& map_db_path,
+    const double start_timestamp,
+    const std::string& viewer_string) {
     // load the mask image
     const cv::Mat mask = mask_img_path.empty() ? cv::Mat{} : cv::imread(mask_img_path, cv::IMREAD_GRAYSCALE);
 
@@ -80,27 +80,27 @@ int mono_tracking(const std::shared_ptr<stella_vslam::system>& slam,
         iridescence_viewer->add_checkbox("Pause", [&is_paused, &mtx_pause](bool check) {
             std::lock_guard<std::mutex> lock(mtx_pause);
             is_paused = check;
-        });
+            });
         iridescence_viewer->add_button("Step", [&step_count, &mtx_step] {
             std::lock_guard<std::mutex> lock(mtx_step);
             step_count++;
-        });
+            });
         iridescence_viewer->add_button("Reset", [&is_paused, &mtx_pause, &slam] {
             slam->request_reset();
-        });
+            });
         iridescence_viewer->add_button("Save and exit", [&is_paused, &mtx_pause, &terminate_is_requested, &mtx_terminate, &slam, &iridescence_viewer] {
             std::lock_guard<std::mutex> lock1(mtx_pause);
             is_paused = false;
             std::lock_guard<std::mutex> lock2(mtx_terminate);
             terminate_is_requested = true;
             iridescence_viewer->request_terminate();
-        });
+            });
         iridescence_viewer->add_close_callback([&is_paused, &mtx_pause, &terminate_is_requested, &mtx_terminate] {
             std::lock_guard<std::mutex> lock1(mtx_pause);
             is_paused = false;
             std::lock_guard<std::mutex> lock2(mtx_terminate);
             terminate_is_requested = true;
-        });
+            });
     }
 #endif
 #ifdef HAVE_SOCKET_PUBLISHER
@@ -161,14 +161,14 @@ int mono_tracking(const std::shared_ptr<stella_vslam::system>& slam,
             double ms_since_start = video.get(cv::CAP_PROP_POS_MSEC);
 
             if (ms_since_start > 0) {
-              timestamp = start_timestamp + (ms_since_start / 1000);
+                timestamp = start_timestamp + (ms_since_start / 1000);
             }
 
             const auto tp_1 = std::chrono::steady_clock::now();
 
             if (!frame.empty() && (num_frame % frame_skip == 0)) {
                 // input the current frame and estimate the camera pose
-                slam->feed_monocular_frame(frame, timestamp, mask);
+                slam->feed_monocular_frame(frame, timestamp, num_frame, mask);
             }
 
             const auto tp_2 = std::chrono::steady_clock::now();
@@ -185,7 +185,7 @@ int mono_tracking(const std::shared_ptr<stella_vslam::system>& slam,
                     std::this_thread::sleep_for(std::chrono::microseconds(static_cast<unsigned int>(wait_time * 1e6)));
                 }
             }
-            
+
             ++num_frame;
 
 #ifdef HAVE_IRIDESCENCE_VIEWER
@@ -227,7 +227,7 @@ int mono_tracking(const std::shared_ptr<stella_vslam::system>& slam,
 #endif
             }
         }
-    });
+        });
 
     // run the viewer in the current thread
     if (viewer_string == "pangolin_viewer") {
@@ -344,31 +344,31 @@ int main(int argc, char* argv[]) {
             && viewer_string != "iridescence_viewer"
             && viewer_string != "none") {
             std::cerr << "invalid arguments (--viewer)" << std::endl
-                      << std::endl
-                      << op << std::endl;
+                << std::endl
+                << op << std::endl;
             return EXIT_FAILURE;
         }
 #ifndef HAVE_PANGOLIN_VIEWER
         if (viewer_string == "pangolin_viewer") {
             std::cerr << "pangolin_viewer not linked" << std::endl
-                      << std::endl
-                      << op << std::endl;
+                << std::endl
+                << op << std::endl;
             return EXIT_FAILURE;
         }
 #endif
 #ifndef HAVE_IRIDESCENCE_VIEWER
         if (viewer_string == "iridescence_viewer") {
             std::cerr << "iridescence_viewer not linked" << std::endl
-                      << std::endl
-                      << op << std::endl;
+                << std::endl
+                << op << std::endl;
             return EXIT_FAILURE;
         }
 #endif
 #ifndef HAVE_SOCKET_PUBLISHER
         if (viewer_string == "socket_publisher") {
             std::cerr << "socket_publisher not linked" << std::endl
-                      << std::endl
-                      << op << std::endl;
+                << std::endl
+                << op << std::endl;
             return EXIT_FAILURE;
         }
 #endif
@@ -451,18 +451,18 @@ int main(int argc, char* argv[]) {
     int ret;
     if (slam->get_camera()->setup_type_ == stella_vslam::camera::setup_type_t::Monocular) {
         ret = mono_tracking(slam,
-                            cfg,
-                            video_file_path->value(),
-                            mask_img_path->value(),
-                            frame_skip->value(),
-                            start_time->value(),
-                            no_sleep->is_set(),
-                            wait_loop_ba->is_set(),
-                            auto_term->is_set(),
-                            eval_log_dir->value(),
-                            map_db_path_out->value(),
-                            timestamp,
-                            viewer_string);
+            cfg,
+            video_file_path->value(),
+            mask_img_path->value(),
+            frame_skip->value(),
+            start_time->value(),
+            no_sleep->is_set(),
+            wait_loop_ba->is_set(),
+            auto_term->is_set(),
+            eval_log_dir->value(),
+            map_db_path_out->value(),
+            timestamp,
+            viewer_string);
     }
     else {
         throw std::runtime_error("Invalid setup type: " + slam->get_camera()->get_setup_type_string());
