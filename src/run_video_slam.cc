@@ -169,7 +169,7 @@ int mono_tracking(const std::shared_ptr<stella_vslam::system>& slam,
 
             if (!frame.empty() && (num_frame % frame_skip == 0)) {
                 if (frame.cols > 1920 || frame.rows > 960) {
-                    cv::resize(frame, resized, cv::Size(1920, 960));
+                    cv::resize(frame, frame, cv::Size(1920, 960));
                 }
                 // input the current frame and estimate the camera pose
                 slam->feed_monocular_frame(frame, timestamp, mask, num_frame);
