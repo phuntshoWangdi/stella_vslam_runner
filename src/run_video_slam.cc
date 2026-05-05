@@ -22,6 +22,7 @@
 #include <opencv2/core/types.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/videoio.hpp>
+#include <opencv2/imgproc.hpp>
 #include <spdlog/spdlog.h>
 #include <popl.hpp>
 
