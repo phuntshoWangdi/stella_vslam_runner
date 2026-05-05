@@ -172,7 +172,7 @@ int mono_tracking(const std::shared_ptr<stella_vslam::system>& slam,
                     cv::resize(frame, frame, cv::Size(1920, 960));
                 }
                 // input the current frame and estimate the camera pose
-                slam->feed_monocular_frame(frame, timestamp, mask, num_frame);
+                slam->feed_monocular_frame(frame, ms_since_start, mask, num_frame);
             }
 
             const auto tp_2 = std::chrono::steady_clock::now();
